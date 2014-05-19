@@ -8,6 +8,8 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="18" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -24,8 +26,7 @@
         </activity>
         <activity
             android:name="org.devops.proyectofinal.RegistrarActivity"
-            android:label="@string/title_activity_registrar"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:label="@string/title_activity_registrar" >
         </activity>
     </application>
 

@@ -1,17 +1,24 @@
 package org.devops.proyectofinal;
 
-import org.devops.proyectofinal.RegistrarActivity.UserLoginTask;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.devops.proyectofinal.json.JsonParser;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -30,6 +37,11 @@ public class MainActivity extends Activity {
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
 
+	JsonParser jParser = new JsonParser();
+
+	private static String url_create_product = "http://192.168.43.98:8080/mvc/android";
+	private static final String TAG_SUCCESS = "success";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +59,6 @@ public class MainActivity extends Activity {
 						attemptLogin();
 					}
 				});
-		
 	}
 
 	public void attemptLogin() {
@@ -69,10 +80,6 @@ public class MainActivity extends Activity {
 		// Check for a valid password.
 		if (TextUtils.isEmpty(mPassword)) {
 			mPasswordView.setError(getString(R.string.error_field_required));
-			focusView = mPasswordView;
-			cancel = true;
-		} else if (mPassword.length() < 4) {
-			mPasswordView.setError(getString(R.string.error_invalid_password));
 			focusView = mPasswordView;
 			cancel = true;
 		}
@@ -139,20 +146,30 @@ public class MainActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
+			List<NameValuePair> props = new ArrayList<NameValuePair>();
+			props.add(new BasicNameValuePair("username", mUserName));
+			props.add(new BasicNameValuePair("password", mPassword));
+			System.out.println(props);
+			JSONObject json = jParser.makeHttpRequest(url_create_product,
+					"POST", props);
+			Log.w("Create Response", json.toString());
 
 			try {
-				// Simulate network access.
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
+				int success = json.getInt(TAG_SUCCESS);
+				if (success == 1) {
+					Log.w("Ingreso", "Ingreso existos");
+					Log.w("Ingreso", Integer.toString(success));
+					return true;
+				} else {
+					Log.w("Ingreso", "se produjo un error");
+					Log.w("Ingreso", Integer.toString(success));
+					return false;
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
 				return false;
 			}
-			if ("oiciruam73".equals(mUserName)) {
-				// Account exists, return true if the password matches.
-				return "mauricio".equals(mPassword);
-			} else {
-				return false;
-			}
+
 		}
 
 		@Override

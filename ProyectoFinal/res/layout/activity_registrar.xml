@@ -5,7 +5,7 @@
     <!-- Login progress -->
 
     <LinearLayout
-        android:id="@+id/login_status"
+        android:id="@+id/register_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -20,7 +20,7 @@
             android:layout_marginBottom="8dp" />
 
         <TextView
-            android:id="@+id/login_status_message"
+            android:id="@+id/register_status_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -32,9 +32,10 @@
     <!-- Login form -->
 
     <ScrollView
-        android:id="@+id/login_form"
+        android:id="@+id/register_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="#E8E8E8" >
 
         <LinearLayout
             style="@style/LoginFormContainer"
@@ -62,7 +63,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/nombre"
+                android:id="@+id/rnombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombre"
@@ -80,7 +81,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/apellido"
+                android:id="@+id/rapellido"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Apellido"
@@ -98,10 +99,28 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/nickname"
+                android:id="@+id/rnickname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="NickName"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="top"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="Correo electrónico:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/remail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="E-mail"
                 android:maxLines="1"
                 android:singleLine="true" />
 
@@ -116,7 +135,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/rpassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_password"
@@ -138,15 +157,16 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/passRep"
+                android:id="@+id/rpassRep"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Repeat Password"
+                android:inputType="textPassword"
                 android:maxLines="1"
                 android:singleLine="true" />
 
             <Button
-                android:id="@+id/sign_in_button"
+                android:id="@+id/register_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"

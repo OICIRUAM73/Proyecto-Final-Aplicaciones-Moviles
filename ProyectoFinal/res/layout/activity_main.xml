@@ -35,7 +35,7 @@
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#B6E7F6" >
+        android:background="#E8E8E8" >
 
         <LinearLayout
             style="@style/LoginFormContainer"
@@ -145,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:background="#B6E7F6"
+                    android:background="#e8e8e8"
                     android:gravity="center_vertical"
                     android:onClick="irRegistrar"
                     android:text="Regístrate"
