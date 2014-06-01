@@ -33,7 +33,7 @@ public class JsonParser {
 				DefaultHttpClient httpClient = new DefaultHttpClient();
 				HttpPost httpPost = new HttpPost(url);
 				httpPost.setEntity(new UrlEncodedFormEntity(params));
-
+				
 				HttpResponse httpResponse = httpClient.execute(httpPost);
 				HttpEntity httpEntity = httpResponse.getEntity();
 				is = httpEntity.getContent();
@@ -64,7 +64,6 @@ public class JsonParser {
 			}
 			is.close();
 			json = sb.toString();
-			System.out.println(json);
 		} catch (Exception e) {
 			Log.e("Buffer Error", "Error converting result" + e.toString());
 		}

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layperfil"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="36dp"
+        android:layout_toLeftOf="@+id/btnPhoto"
+        android:text="Usuario" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imgPhoto"
+        android:layout_alignRight="@+id/imgPhoto"
+        android:layout_centerVertical="true"
+        android:text="E-mail" />
+
+    <ImageView
+        android:id="@+id/imgPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:layout_toLeftOf="@+id/btnPhoto"
+        android:src="@drawable/icono1" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/btnPhoto"
+        android:layout_below="@+id/textView2"
+        android:layout_marginTop="38dp"
+        android:text="Perfil" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/textView3"
+        android:layout_below="@+id/textView3"
+        android:layout_marginTop="18dp"
+        android:ems="10"
+        android:text="Escribe aqui tu perfil" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/textView3"
+        android:layout_below="@+id/textView2"
+        android:ems="10"
+        android:inputType="textEmailAddress" 
+        android:text="e-mail"/>
+
+    <Button
+        android:id="@+id/Guardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtPhoto"
+        android:layout_below="@+id/editText1"
+        android:layout_marginTop="24dp"
+        android:text="Guardar" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:text="Profile" />
+
+    <Button
+        android:id="@+id/btnPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imgPhoto"
+        android:layout_alignParentRight="true"
+        android:text="Editar Foto" />
+
+    <TextView
+        android:id="@+id/txtPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnPhoto"
+        android:layout_toRightOf="@+id/imgPhoto"
+        android:singleLine="true"
+        android:text="Fotoooo"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/messageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="" />
+
+</RelativeLayout>

@@ -39,7 +39,8 @@ public class MainActivity extends Activity {
 
 	JsonParser jParser = new JsonParser();
 
-	private static String url_create_product = "http://192.168.43.98:8080/mvc/android";
+	private static String url_create_product = "http://192.168.0.105:80/micronott/micronott/android";
+	//private static String url_create_product = "http://192.168.0.102:8080/mvc/android";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -157,8 +158,8 @@ public class MainActivity extends Activity {
 			try {
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
+					Utils.idUser = json.getString("idUser");
 					Log.w("Ingreso", "Ingreso existos");
-					Log.w("Ingreso", Integer.toString(success));
 					return true;
 				} else {
 					Log.w("Ingreso", "se produjo un error");
@@ -178,8 +179,10 @@ public class MainActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
+
 				Intent i = new Intent(getApplicationContext(),
-						RegistrarActivity.class);
+						PostsActivity.class);
+				finish();
 				startActivity(i);
 			} else {
 				mPasswordView

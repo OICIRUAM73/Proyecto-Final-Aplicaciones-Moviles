@@ -20,10 +20,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,21 +31,7 @@ import android.widget.Toast;
  * well.
  */
 public class RegistrarActivity extends Activity {
-	/**
-	 * A dummy authentication store containing known user names and passwords.
-	 * TODO: remove after connecting to a real authentication system.
-	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"foo@example.com:hello", "bar@example.com:world" };
 
-	/**
-	 * The default email to populate the email field with.
-	 */
-	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-
-	/**
-	 * Keep track of the login task to ensure we can cancel it if requested.
-	 */
 	private UserLoginTask mAuthTask = null;
 
 	// Values for email and password at the time of the login attempt.
@@ -72,7 +56,8 @@ public class RegistrarActivity extends Activity {
 
 	JsonParser jParser = new JsonParser();
 
-	private static String url_create_product = "http://192.168.43.98:8080/mvc/android/registro";
+	private static String url_create_product = "http://192.168.0.105:80/micronott/micronott/android/registro";
+	//private static String url_create_product = "http://192.168.0.102:8080/mvc/android/registro";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -251,7 +236,6 @@ public class RegistrarActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("name", rNombre));
 			props.add(new BasicNameValuePair("lastname", rApellido));
