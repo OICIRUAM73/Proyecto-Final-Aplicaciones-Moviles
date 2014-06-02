@@ -12,7 +12,6 @@ import org.devops.proyectofinal.entidades.Usuario;
 import org.devops.proyectofinal.json.JsonParser;
 import org.devops.proyectofinal.users.ListaFollow;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
@@ -20,11 +19,11 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class FollowFragment extends ListFragment {
 
@@ -35,11 +34,11 @@ public class FollowFragment extends ListFragment {
 	private String idUsuarioPasar = "";
 	private String nickName = "";
 
-	private LoadPostsTask mLoadToFollowTask = null;
+	private LoadToFollowTask mLoadToFollowTask = null;
 	private LoadFollowTask mFollowTask = null;
 	private JsonParser jParser = new JsonParser();
-	private static String url_load_follow = "http://192.168.0.105:80/micronott/micronott/android/allUser";
-	private static String url_follow = "http://192.168.0.105:80/micronott/micronott/android/seguir";
+	private static String url_load_follow = Utils.baseurl + "/android/allUser";
+	private static String url_follow = Utils.baseurl + "/android/seguir";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -59,21 +58,21 @@ public class FollowFragment extends ListFragment {
 		if (mLoadToFollowTask != null) {
 			return;
 		}
-		mLoadToFollowTask = new LoadPostsTask();
+		mLoadToFollowTask = new LoadToFollowTask();
 		mLoadToFollowTask.execute((Void) null);
 	}
 
-	public class LoadPostsTask extends AsyncTask<Void, Void, Boolean> {
+	public class LoadToFollowTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 
-			JSONObject json = jParser.makeHttpRequest(url_load_follow, "POST",
-					props);
-			Log.w("Response follow: ", json.toString());
-
 			try {
+
+				JSONObject json = jParser.makeHttpRequest(url_load_follow,
+						"POST", props);
+
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 					usuarios.removeAllElements();
@@ -85,23 +84,18 @@ public class FollowFragment extends ListFragment {
 								jsonPost.getString("nombre") + " "
 										+ jsonPost.getString("apellido"),
 								"descripcion usuario",
-										jsonPost.getString("nickname"),
+								jsonPost.getString("nickname"),
 								jsonPost.getString("idUser"));
-						System.out.println("Usuario: " + usuario.getNombre() + " - " + usuario.getIdUser());
 						usuarios.add(usuario);
 					}
-					System.out.println("USUARIOS: \n" + usuarios.toString());
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
-
 		}
 
 		@Override
@@ -109,14 +103,13 @@ public class FollowFragment extends ListFragment {
 			mLoadToFollowTask = null;
 
 			if (success) {
-				System.out.println("success");
 				lista = new ListaFollow(getActivity(), usuarios);
 				setListAdapter(lista);
 			} else {
-				System.out.println("incorrect");
+				Toast.makeText(getActivity().getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
-
 		@Override
 		protected void onCancelled() {
 			mLoadToFollowTask = null;
@@ -135,7 +128,7 @@ public class FollowFragment extends ListFragment {
 	public void showDialogPost() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle("Seguir");
-		builder.setMessage("¿Desea seguir a este usuario?");
+		builder.setMessage("Desea seguir a este usuario?");
 
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -169,21 +162,19 @@ public class FollowFragment extends ListFragment {
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 			props.add(new BasicNameValuePair("idUserAmigo", idUsuarioPasar));
 			props.add(new BasicNameValuePair("nicknameAmigo", nickName));
-			JSONObject json = jParser
-					.makeHttpRequest(url_follow, "POST", props);
-			Log.w("Response follow: ", json.toString());
 
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_follow, "POST",
+						props);
+
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -195,10 +186,11 @@ public class FollowFragment extends ListFragment {
 			mLoadToFollowTask = null;
 
 			if (success) {
-				System.out.println("success");
 				attemptLoadToFollow();
 			} else {
-				System.out.println("incorrect");
+
+				Toast.makeText(getActivity().getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
 

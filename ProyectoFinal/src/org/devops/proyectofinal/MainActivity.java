@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.devops.proyectofinal.json.JsonParser;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.animation.Animator;
@@ -30,6 +29,7 @@ public class MainActivity extends Activity {
 
 	private String mUserName;
 	private String mPassword;
+	private String mensajeError = "";
 
 	private EditText mUserNameView;
 	private EditText mPasswordView;
@@ -39,8 +39,8 @@ public class MainActivity extends Activity {
 
 	JsonParser jParser = new JsonParser();
 
-	private static String url_create_product = "http://192.168.0.105:80/micronott/micronott/android";
-	//private static String url_create_product = "http://192.168.0.102:8080/mvc/android";
+	private static String url_create_product = Utils.baseurl + "/android";
+
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -150,27 +150,24 @@ public class MainActivity extends Activity {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("username", mUserName));
 			props.add(new BasicNameValuePair("password", mPassword));
-			System.out.println(props);
-			JSONObject json = jParser.makeHttpRequest(url_create_product,
-					"POST", props);
-			Log.w("Create Response", json.toString());
 
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_create_product,
+						"POST", props);
+				Log.w("Create Response", json.toString());
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 					Utils.idUser = json.getString("idUser");
-					Log.w("Ingreso", "Ingreso existos");
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
+					mensajeError = "El usuario y/o contraseña son incorrectos.";
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
+				mensajeError = "No se puede establecer conexion con el servidor";
 				return false;
 			}
-
 		}
 
 		@Override
@@ -185,8 +182,7 @@ public class MainActivity extends Activity {
 				finish();
 				startActivity(i);
 			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
+				mPasswordView.setError(mensajeError);
 				mPasswordView.requestFocus();
 			}
 		}
@@ -203,10 +199,4 @@ public class MainActivity extends Activity {
 		startActivity(i);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
 }

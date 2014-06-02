@@ -9,11 +9,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.devops.proyectofinal.entidades.Post;
 import org.devops.proyectofinal.json.JsonParser;
-import org.devops.proyectofinal.users.UsuariosActivity;
 import org.devops.pulltorefresh.PullToRefreshListView;
 import org.devops.pulltorefresh.PullToRefreshListView.OnRefreshListener;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ActionBar;
@@ -23,7 +21,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,13 +39,12 @@ public class PostsActivity extends ListActivity {
 
 	String postNuevo = "";
 
-	// private static String url_create_product =
-	// "http://192.168.0.102:8080/mvc/android/posts";
-	private static String url_load_posts = "http://192.168.0.105:80/micronott/micronott/android/posts";
-	// private static String url_create_post =
-	// "http://192.168.0.102:8080/mvc/android/nuevoPost";
-	private static String url_create_post = "http://192.168.0.105:80/micronott/micronott/android/nuevoPost";
-	private static String url_load_last_posts = "http://192.168.0.105:80/micronott/micronott/android/postUltimos";
+	private static String url_load_posts = Utils.baseurl + "/android/posts";
+
+	private static String url_create_post = Utils.baseurl
+			+ "/android/nuevoPost";
+	private static String url_load_last_posts = Utils.baseurl
+			+ "/android/postUltimos";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -56,8 +52,9 @@ public class PostsActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_posts);
 		ActionBar actionBar = getActionBar();
+		setTitle("Posts");
 		actionBar.show();
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		getOverflowMenu();
 		posts = new Vector<Post>();
 		attemptLoadPosts();
@@ -67,7 +64,6 @@ public class PostsActivity extends ListActivity {
 				.setOnRefreshListener(new OnRefreshListener() {
 					@Override
 					public void onRefresh() {
-
 						// Do work to refresh the list here.
 						new GetDataTask().execute();
 					}
@@ -82,11 +78,9 @@ public class PostsActivity extends ListActivity {
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 			props.add(new BasicNameValuePair("time", posts.get(0)
 					.getPostingTime()));
-			JSONObject json = jParser.makeHttpRequest(url_load_last_posts,
-					"POST", props);
-			Log.w("Create Response last posts: ", json.toString());
-
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_load_last_posts,
+						"POST", props);
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 					JSONArray JsonPosts = json.getJSONArray("posts");
@@ -100,11 +94,9 @@ public class PostsActivity extends ListActivity {
 					}
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -117,7 +109,8 @@ public class PostsActivity extends ListActivity {
 				lista.notifyDataSetChanged();
 				((PullToRefreshListView) getListView()).onRefreshComplete();
 			} else {
-				System.out.println("incorrect");
+				Toast.makeText(getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -136,11 +129,10 @@ public class PostsActivity extends ListActivity {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 
-			JSONObject json = jParser.makeHttpRequest(url_load_posts, "POST",
-					props);
-			Log.w("Create Response", json.toString());
-
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_load_posts,
+						"POST", props);
+
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 					posts.removeAllElements();
@@ -152,16 +144,12 @@ public class PostsActivity extends ListActivity {
 								jsonPost.getString("postingTime"),
 								jsonPost.getString("Contenido"));
 						posts.add(post);
-
 					}
-
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -173,11 +161,11 @@ public class PostsActivity extends ListActivity {
 			mLoadPostTask = null;
 
 			if (success) {
-				System.out.println("success");
 				lista = new ListaPost(PostsActivity.this, posts);
 				setListAdapter(lista);
 			} else {
-				System.out.println("incorrect");
+				Toast.makeText(getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -202,23 +190,17 @@ public class PostsActivity extends ListActivity {
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 			props.add(new BasicNameValuePair("content", postNuevo));
 
-			JSONObject json = jParser.makeHttpRequest(url_create_post, "POST",
-					props);
-			Log.w("Create Response", json.toString());
-
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_create_post,
+						"POST", props);
+
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
-					Log.w("Ingreso", "Ingreso existos");
-					Log.w("Mensaje: ", json.getString("message"));
-
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -230,14 +212,15 @@ public class PostsActivity extends ListActivity {
 			mPostTask = null;
 
 			if (success) {
-				System.out.println("success");
-				Toast.makeText(getApplicationContext(), "Success posting",
+
+				Toast.makeText(getApplicationContext(), "Posteo existoso!",
 						Toast.LENGTH_SHORT).show();
 				attemptLoadPosts();
 				lista.notifyDataSetChanged();
 
 			} else {
-				System.out.println("incorrect");
+				Toast.makeText(getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -314,16 +297,21 @@ public class PostsActivity extends ListActivity {
 			e.printStackTrace();
 		}
 	}
-	
-	public void lanzarUsuarios(){
-		Intent i = new Intent(getApplicationContext(),
-				UsuariosActivity.class);
+
+	public void lanzarUsuarios() {
+		Intent i = new Intent(getApplicationContext(), UsuariosActivity.class);
 		startActivity(i);
 	}
-	public void lanzarProfile(){
-		Intent i = new Intent(getApplicationContext(),
-				Camara.class);
+
+	public void lanzarProfile() {
+		Intent i = new Intent(getApplicationContext(), Camara.class);
 		startActivity(i);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		attemptLoadPosts();
 	}
 
 }

@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ListaFollowing extends BaseAdapter {
@@ -39,7 +37,7 @@ public class ListaFollowing extends BaseAdapter {
 		textViewPerfil.setText(lista.elementAt(position).getNombre());
 
 		/* Foto del contacto que realizo el post */
-		ImageView imageView = (ImageView) view.findViewById(R.id.imgPersona);
+		//ImageView imageView = (ImageView) view.findViewById(R.id.imgPersona);
 
 		/* Nombre del contacto que ha realizado el post */
 		TextView textViewInfo = (TextView) view.findViewById(R.id.txtInfo);

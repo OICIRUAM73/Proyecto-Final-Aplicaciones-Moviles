@@ -53,6 +53,8 @@ public class JsonParser {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(

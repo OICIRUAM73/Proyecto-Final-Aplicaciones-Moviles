@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.devops.proyectofinal.json.JsonParser;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.animation.Animator;
@@ -19,20 +18,15 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * Activity which displays a login screen to the user, offering registration as
- * well.
- */
 public class RegistrarActivity extends Activity {
 
-	private UserLoginTask mAuthTask = null;
+	private UserRegisterTask aRegisterTask = null;
 
 	// Values for email and password at the time of the login attempt.
 	private String rNombre;
@@ -56,8 +50,8 @@ public class RegistrarActivity extends Activity {
 
 	JsonParser jParser = new JsonParser();
 
-	private static String url_create_product = "http://192.168.0.105:80/micronott/micronott/android/registro";
-	//private static String url_create_product = "http://192.168.0.102:8080/mvc/android/registro";
+	private static String url_create_product = Utils.baseurl
+			+ "/android/registro";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -97,22 +91,19 @@ public class RegistrarActivity extends Activity {
 		return true;
 	}
 
-	/**
-	 * Attempts to sign in or register the account specified by the login form.
-	 * If there are form errors (invalid email, missing fields, etc.), the
-	 * errors are presented and no actual login attempt is made.
-	 */
+	
 	public void attemptRegister() {
-		if (mAuthTask != null) {
+		if (aRegisterTask != null) {
 			return;
 		}
 
 		// Reset errors.
 		rEmailView.setError(null);
+		rApellidoView.setError(null);
+		rNicknameView.setError(null);
+		rNombreView.setError(null);
 		rPasswordView.setError(null);
-		rPasswordView.setError(null);
-		rPasswordView.setError(null);
-		rPasswordView.setError(null);
+		rRepPasswordView.setError(null);
 
 		// Store values at the time of the login attempt.
 		rNombre = rNombreView.getText().toString();
@@ -180,16 +171,13 @@ public class RegistrarActivity extends Activity {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
 			rRegisterStatusMessageView
-					.setText(R.string.login_progress_signing_in);
+					.setText("Registrando");
 			showProgress(true);
-			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			aRegisterTask = new UserRegisterTask();
+			aRegisterTask.execute((Void) null);
 		}
 	}
 
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
 		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -229,11 +217,7 @@ public class RegistrarActivity extends Activity {
 		}
 	}
 
-	/**
-	 * Represents an asynchronous login/registration task used to authenticate
-	 * the user.
-	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+	public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
@@ -243,36 +227,34 @@ public class RegistrarActivity extends Activity {
 			props.add(new BasicNameValuePair("email", rEmail));
 			props.add(new BasicNameValuePair("password", rPassword));
 			props.add(new BasicNameValuePair("passwordConfirm", rRepPassword));
-			System.out.println(props);
-			JSONObject json = jParser.makeHttpRequest(url_create_product,
-					"POST", props);
-			Log.w("Create Response", json.toString());
 
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_create_product,
+						"POST", props);
 				int success = json.getInt(TAG_SUCCESS);
-				System.out.println("tag success: " + success);
 				if (success == 1) {
-					Log.w("Registro", "Registro existos");
-					Log.w("Registro", Integer.toString(success));
 					return true;
 				} else {
 					mensaje = json.getString("message");
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
+				mensaje = "No tiene una conexion activa";
 				return false;
 			}
 		}
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mAuthTask = null;
+			aRegisterTask = null;
 			showProgress(false);
-			System.out.println("entra post exectu");
 			if (success) {
+				Toast.makeText(getApplicationContext(), "Registro exitoso.",
+						Toast.LENGTH_SHORT).show();
 				Intent i = new Intent(getApplicationContext(),
 						MainActivity.class);
+				finish();
 				startActivity(i);
 			} else {
 				Toast.makeText(getApplicationContext(), mensaje,
@@ -282,7 +264,7 @@ public class RegistrarActivity extends Activity {
 
 		@Override
 		protected void onCancelled() {
-			mAuthTask = null;
+			aRegisterTask = null;
 			showProgress(false);
 		}
 	}

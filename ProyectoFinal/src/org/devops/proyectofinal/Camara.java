@@ -11,10 +11,14 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.devops.proyectofinal.entidades.Profile;
+import org.devops.proyectofinal.imageLoader.ImageLoader;
 import org.devops.proyectofinal.json.JsonParser;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -27,10 +31,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,27 +48,38 @@ public class Camara extends Activity {
 	private int TAKE_PICTURE = 829038;
 
 	private UserLoginTask mAuthTask = null;
-	
-	JsonParser jParser = new JsonParser();
-	private static String url_create_product = "http://192.168.0.105:80/micronott/micronott/android/profileUsuario";
-	private static final String TAG_SUCCESS = "success";
+	private updateUserTask uAuthTask = null;
 
+	JsonParser jParser = new JsonParser();
+	private static String url_getProfile = Utils.baseurl
+			+ "/android/profileUsuario";
+	private static String url_updateProfile = Utils.baseurl
+			+ "/android/updateProfileUsuario";
+	private static final String TAG_SUCCESS = "success";
 	private ImageView imgPhoto;
 	private TextView txtPhoto;
 	private Button btnPhoto, uploadButton;
 	private String imagepath = null;
 	private TextView messageText;
-
+	private TextView usuario;
+	private EditText email;
 	private int serverResponseCode = 0;
 	private ProgressDialog dialog = null;
 	private String upLoadServerUri = null;
+	private EditText desc;
+	Profile profile = new Profile();
 
-	/** Este mŽtodo es llamado cuando la actividad es creada */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.camara);
-		post();
+		ActionBar actionBar = getActionBar();
+		actionBar.show();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		profile();
+		usuario = (TextView) findViewById(R.id.textView1);
+		email = (EditText) findViewById(R.id.editText2);
+		desc = (EditText) findViewById(R.id.editText1);
 		imgPhoto = (ImageView) findViewById(R.id.imgPhoto);
 		// imgPhoto.setImageURI(uri);
 		txtPhoto = (TextView) findViewById(R.id.txtPhoto);
@@ -76,10 +94,16 @@ public class Camara extends Activity {
 		});
 
 		// btnPhoto.setOnClickListener(this);
-		// uploadButton.setOnClickListener(this);
+		uploadButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				profile.setDescripcion(desc.getText().toString());
+				profile.setEmail(email.getText().toString());
+				updateProfile();
 
-		upLoadServerUri = "http://192.168.0.105/micronott/micronott/android/addPhotosAndroid";
-		ImageView img = new ImageView(this);
+			}
+		});
+
+		upLoadServerUri = Utils.baseurl + "/android/addPhotosAndroid";
 	}
 
 	@Override
@@ -135,7 +159,7 @@ public class Camara extends Activity {
 
 	private void dialogPhoto() {
 		try {
-			final CharSequence[] items = { "Seleccionar de la galería",
+			final CharSequence[] items = { "Seleccionar de la galeria",
 					"Hacer una foto" };
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -204,8 +228,8 @@ public class Camara extends Activity {
 			return 0;
 
 		} else {
-			try {
 
+			try {
 				// open a URL connection to the Servlet
 				FileInputStream fileInputStream = new FileInputStream(
 						sourceFile);
@@ -217,13 +241,21 @@ public class Camara extends Activity {
 				conn.setDoOutput(true); // Allow Outputs
 				conn.setUseCaches(false); // Don't use a Cached Copy
 				conn.setRequestMethod("POST");
+
+				// paramns
+
 				conn.setRequestProperty("Connection", "Keep-Alive");
-				conn.setRequestProperty("ENCTYPE", "multipart/form-data");
 				conn.setRequestProperty("Content-Type",
 						"multipart/form-data;boundary=" + boundary);
-				conn.setRequestProperty("uploaded_file", fileName);
-
 				dos = new DataOutputStream(conn.getOutputStream());
+
+				// send paramter #1
+				dos.writeBytes(twoHyphens + boundary + lineEnd);
+				dos.writeBytes("Content-Disposition: form-data; name=\"param1\""
+						+ lineEnd + lineEnd);
+				dos.writeBytes(Integer.parseInt(Utils.idUser) + lineEnd);
+
+				// send image
 
 				dos.writeBytes(twoHyphens + boundary + lineEnd);
 				dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
@@ -264,8 +296,7 @@ public class Camara extends Activity {
 
 					runOnUiThread(new Runnable() {
 						public void run() {
-							String msg = "File Upload Completed.\n\n See uploaded file here : \n\n"
-									+ " F:/wamp/wamp/www/uploads";
+							String msg = "File Upload Completed";
 							messageText.setText(msg);
 							Toast.makeText(Camara.this,
 									"File Upload Complete.", Toast.LENGTH_SHORT)
@@ -314,9 +345,10 @@ public class Camara extends Activity {
 			return serverResponseCode;
 
 		} // End else block
+
 	}
 
-	public void post() {
+	public void profile() {
 		if (mAuthTask != null) {
 			return;
 		}
@@ -330,15 +362,36 @@ public class Camara extends Activity {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 
-			JSONObject json = jParser.makeHttpRequest(url_create_product,
-					"POST", props);
+			JSONObject json = jParser.makeHttpRequest(url_getProfile, "POST",
+					props);
+			Log.w("Esto me  en camara: ", Utils.idUser);
+
 			Log.w("Esto me devulve en camara: ", json.toString());
 
 			try {
+				System.out.println(json.getInt(TAG_SUCCESS));
 				int success = json.getInt(TAG_SUCCESS);
-				
+				if (success == 1) {
+
+					JSONArray JsonProfile = json.getJSONArray("userProfile");
+					JSONArray JsonFoto = json.getJSONArray("photo");
+					JSONObject jsonFoto = JsonFoto.getJSONObject(0);
+					for (int i = 0; i < JsonProfile.length(); i++) {
+						JSONObject jsonPost = JsonProfile.getJSONObject(i);
+						profile.setNombre(jsonPost.getString("nombre"));
+						profile.setNickname(jsonPost.getString("nickname"));
+						profile.setEmail(jsonPost.getString("email"));
+						profile.setDescripcion(jsonPost
+								.getString("descripcion"));
+						profile.setPathFoto(jsonFoto.getString("location"));
+
+					}
+
 					return true;
-			
+				} else {
+					return false;
+				}
+
 			} catch (JSONException e) {
 				e.printStackTrace();
 				return false;
@@ -351,20 +404,93 @@ public class Camara extends Activity {
 			mAuthTask = null;
 
 			if (success) {
+				usuario.setText(profile.getNombre());
+				email.setText(profile.getEmail());
+				desc.setText(profile.getDescripcion());
+				int loader = R.drawable.ic_launcher;
+				String image_url = Utils.baseurl + "/" + profile.getPathFoto();
+				ImageLoader imgLoader = new ImageLoader(getApplicationContext());
+				imgLoader.DisplayImage(image_url, loader, imgPhoto);
 
 			} else {
-				/*
-				 * mPasswordView
-				 * .setError(getString(R.string.error_incorrect_password));
-				 * mPasswordView.requestFocus();
-				 */
+
 			}
+
 		}
 
 		@Override
 		protected void onCancelled() {
 			mAuthTask = null;
 			// showProgress(false);
+		}
+	}
+
+	public void updateProfile() {
+		if (uAuthTask != null) {
+			return;
+		}
+		uAuthTask = new updateUserTask();
+		uAuthTask.execute((Void) null);
+	}
+
+	public class updateUserTask extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			List<NameValuePair> props = new ArrayList<NameValuePair>();
+			props.add(new BasicNameValuePair("email", profile.getEmail()));
+			props.add(new BasicNameValuePair("descripcion", profile
+					.getDescripcion()));
+			props.add(new BasicNameValuePair("idUser", Utils.idUser));
+
+			JSONObject json = jParser.makeHttpRequest(url_updateProfile,
+					"POST", props);
+			Log.w("Esto me devulve en camara: ", json.toString());
+
+			try {
+				System.out.println(json.getInt(TAG_SUCCESS));
+				int success = json.getInt(TAG_SUCCESS);
+				if (success == 1) {
+
+					return true;
+				} else {
+					return false;
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}
+
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			mAuthTask = null;
+
+			if (success) {
+				Toast.makeText(getApplicationContext(), "Perfil actualizado!",
+						Toast.LENGTH_SHORT).show();
+			} else {
+
+			}
+
+		}
+
+		@Override
+		protected void onCancelled() {
+			uAuthTask = null;
+			// showProgress(false);
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 	}
 

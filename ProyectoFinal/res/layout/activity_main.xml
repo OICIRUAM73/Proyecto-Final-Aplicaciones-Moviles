@@ -49,7 +49,7 @@
                 android:layout_weight="1"
                 android:fontFamily=""
                 android:gravity="center"
-                android:text="NOMBRE APP"
+                android:text="MICRONOTT"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <ImageView

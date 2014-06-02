@@ -102,7 +102,7 @@
         android:layout_above="@+id/btnPhoto"
         android:layout_toRightOf="@+id/imgPhoto"
         android:singleLine="true"
-        android:text="Fotoooo"
+        android:text="Foto"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView

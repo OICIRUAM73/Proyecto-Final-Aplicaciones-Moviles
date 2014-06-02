@@ -12,16 +12,15 @@ import org.devops.proyectofinal.entidades.Usuario;
 import org.devops.proyectofinal.json.JsonParser;
 import org.devops.proyectofinal.users.ListaFollowers;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class FollowersFragment extends ListFragment {
 
@@ -29,9 +28,10 @@ public class FollowersFragment extends ListFragment {
 
 	Vector<Usuario> usuarios;
 
-	private LoadPostsTask mLoadToFollowTask = null;
+	private LoadFollowersTask mLoadFollowersTask = null;
 	private JsonParser jParser = new JsonParser();
-	private static String url_load_followers = "http://192.168.0.105:80/micronott/micronott/android/userFollower";
+	private static String url_load_followers = Utils.baseurl
+			+ "/android/userFollower";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -48,24 +48,23 @@ public class FollowersFragment extends ListFragment {
 	}
 
 	public void attemptLoadToFollow() {
-		if (mLoadToFollowTask != null) {
+		if (mLoadFollowersTask != null) {
 			return;
 		}
-		mLoadToFollowTask = new LoadPostsTask();
-		mLoadToFollowTask.execute((Void) null);
+		mLoadFollowersTask = new LoadFollowersTask();
+		mLoadFollowersTask.execute((Void) null);
 	}
 
-	public class LoadPostsTask extends AsyncTask<Void, Void, Boolean> {
+	public class LoadFollowersTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 
-			JSONObject json = jParser.makeHttpRequest(url_load_followers,
-					"POST", props);
-			Log.w("Response follow: ", json.toString());
-
 			try {
+				JSONObject json = jParser.makeHttpRequest(url_load_followers,
+						"POST", props);
+
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 					usuarios.removeAllElements();
@@ -80,14 +79,11 @@ public class FollowersFragment extends ListFragment {
 								jsonPost.getString("idUser"));
 						usuarios.add(usuario);
 					}
-					System.out.println("USUARIOS: \n" + usuarios.toString());
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -96,20 +92,20 @@ public class FollowersFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mLoadToFollowTask = null;
+			mLoadFollowersTask = null;
 
 			if (success) {
-				System.out.println("success");
 				lista = new ListaFollowers(getActivity(), usuarios);
 				setListAdapter(lista);
 			} else {
-				System.out.println("incorrect");
+				Toast.makeText(getActivity().getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
 
 		@Override
 		protected void onCancelled() {
-			mLoadToFollowTask = null;
+			mLoadFollowersTask = null;
 		}
 	}
 }

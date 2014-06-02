@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -22,6 +24,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
 public class FollowingFragment extends ListFragment {
 	private ListaFollowing lista;
@@ -29,8 +33,13 @@ public class FollowingFragment extends ListFragment {
 	Vector<Usuario> usuarios;
 
 	private LoadPostsTask mLoadToFollowTask = null;
+	private LoadFollowingTask mFollowingTask = null;
+	private String idUsuarioPasar = "";
+
 	private JsonParser jParser = new JsonParser();
-	private static String url_load_follow = "http://192.168.0.105:80/micronott/micronott/android/userFollowing";
+	private static String url_load_follow = Utils.baseurl
+			+ "/android/userFollowing";
+	private static String url_unFollow = Utils.baseurl + "/android/stopFollow";
 	private static final String TAG_SUCCESS = "success";
 
 	@Override
@@ -74,8 +83,8 @@ public class FollowingFragment extends ListFragment {
 						Usuario usuario = new Usuario(
 								jsonPost.getString("nombre") + " "
 										+ jsonPost.getString("apellido"),
-								"descripcion usuario", "("
-										+ jsonPost.getString("nickname") + ")",
+								"descripcion usuario",
+								jsonPost.getString("nickname"),
 								jsonPost.getString("idUser"));
 						usuarios.add(usuario);
 					}
@@ -103,6 +112,87 @@ public class FollowingFragment extends ListFragment {
 				setListAdapter(lista);
 			} else {
 				System.out.println("incorrect");
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			mLoadToFollowTask = null;
+		}
+	}
+
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		idUsuarioPasar = usuarios.get(position).getIdUser();
+		showDialogPost();
+
+		super.onListItemClick(l, v, position, id);
+	}
+
+	public void showDialogPost() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Seguir");
+		builder.setMessage("Desea dejar de seguir a este usuario?");
+
+		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				attemptFollowUser();
+			}
+		});
+
+		builder.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+					}
+				});
+
+		builder.show();
+	}
+
+	public void attemptFollowUser() {
+		if (mFollowingTask != null) {
+			return;
+		}
+		mFollowingTask = new LoadFollowingTask();
+		mFollowingTask.execute((Void) null);
+	}
+
+	public class LoadFollowingTask extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			List<NameValuePair> props = new ArrayList<NameValuePair>();
+			props.add(new BasicNameValuePair("idUser", Utils.idUser));
+			props.add(new BasicNameValuePair("idUserAmigo", idUsuarioPasar));
+
+			try {
+				JSONObject json = jParser.makeHttpRequest(url_unFollow, "POST",
+						props);
+
+				int success = json.getInt(TAG_SUCCESS);
+				if (success == 1) {
+
+					return true;
+				} else {
+					return false;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			mLoadToFollowTask = null;
+
+			if (success) {
+				System.out.println("success");
+				attemptLoadToFollow();
+			} else {
+				Toast.makeText(getActivity().getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
 

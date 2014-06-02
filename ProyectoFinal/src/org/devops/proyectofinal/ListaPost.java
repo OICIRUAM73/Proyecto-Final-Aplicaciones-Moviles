@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ListaPost extends BaseAdapter {
@@ -36,9 +35,8 @@ public class ListaPost extends BaseAdapter {
 		/* Lista que contiene todos los post en el twitter */
 		textViewContenido.setText(lista.elementAt(position).getContenido());
 
-
 		/* Foto del contacto que realizo el post */
-		ImageView imageView = (ImageView) view.findViewById(R.id.imgContacto);
+		//ImageView imageView = (ImageView) view.findViewById(R.id.imgContacto);
 
 		/* Nombre del contacto que ha realizado el post */
 		TextView textViewContacto = (TextView) view

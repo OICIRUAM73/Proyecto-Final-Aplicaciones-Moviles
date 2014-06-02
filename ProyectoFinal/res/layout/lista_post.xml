@@ -8,7 +8,7 @@
         android:layout_width="?android:attr/listPreferredItemHeight"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/icono1" />
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/txtContenido"
