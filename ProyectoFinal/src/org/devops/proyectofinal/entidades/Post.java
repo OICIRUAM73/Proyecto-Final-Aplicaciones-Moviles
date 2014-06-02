@@ -4,11 +4,23 @@ public class Post {
 	private String nickname;
 	private String postingTime;
 	private String contenido;
+	private String location;
 
-	public Post(String nickname, String postingTime, String contenido) {
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public Post(String nickname, String postingTime, String contenido,
+			String location) {
 		this.nickname = nickname;
 		this.postingTime = postingTime;
-		this.contenido= contenido;
+		this.contenido = contenido;
+		this.location = location;
+
 	}
 
 	public String getNickname() {

@@ -54,7 +54,7 @@ public class PostsActivity extends ListActivity {
 		ActionBar actionBar = getActionBar();
 		setTitle("Posts");
 		actionBar.show();
-		
+
 		getOverflowMenu();
 		posts = new Vector<Post>();
 		attemptLoadPosts();
@@ -89,7 +89,8 @@ public class PostsActivity extends ListActivity {
 						JSONObject jsonPost = JsonPosts.getJSONObject(i);
 						Post post = new Post(jsonPost.getString("nickname"),
 								jsonPost.getString("postingTime"),
-								jsonPost.getString("Contenido"));
+								jsonPost.getString("Contenido"),
+								jsonPost.getString("location"));
 						posts.add(post);
 					}
 					return true;
@@ -142,7 +143,8 @@ public class PostsActivity extends ListActivity {
 						JSONObject jsonPost = JsonPosts.getJSONObject(i);
 						Post post = new Post(jsonPost.getString("nickname"),
 								jsonPost.getString("postingTime"),
-								jsonPost.getString("Contenido"));
+								jsonPost.getString("Contenido"),
+                                jsonPost.getString("location"));
 						posts.add(post);
 					}
 					return true;
@@ -161,7 +163,7 @@ public class PostsActivity extends ListActivity {
 			mLoadPostTask = null;
 
 			if (success) {
-				lista = new ListaPost(PostsActivity.this, posts);
+				lista = new ListaPost(PostsActivity.this, posts,getApplicationContext());
 				setListAdapter(lista);
 			} else {
 				Toast.makeText(getApplicationContext(),
