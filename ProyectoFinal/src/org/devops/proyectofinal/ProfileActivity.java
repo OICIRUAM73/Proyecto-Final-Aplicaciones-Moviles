@@ -31,7 +31,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -319,8 +318,9 @@ public class ProfileActivity extends Activity {
 					public void run() {
 						messageText
 								.setText("MalformedURLException Exception : check script url.");
-						Toast.makeText(ProfileActivity.this, "MalformedURLException",
-								Toast.LENGTH_SHORT).show();
+						Toast.makeText(ProfileActivity.this,
+								"MalformedURLException", Toast.LENGTH_SHORT)
+								.show();
 					}
 				});
 
@@ -359,13 +359,10 @@ public class ProfileActivity extends Activity {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 
-			JSONObject json = jParser.makeHttpRequest(url_getProfile, "POST",
-					props);
-			Log.w("Esto me  en camara: ", Utils.idUser);
-
-			Log.w("Esto me devulve en camara: ", json.toString());
-
 			try {
+
+				JSONObject json = jParser.makeHttpRequest(url_getProfile,
+						"POST", props);
 				System.out.println(json.getInt(TAG_SUCCESS));
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
@@ -402,7 +399,7 @@ public class ProfileActivity extends Activity {
 					return false;
 				}
 
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -423,7 +420,8 @@ public class ProfileActivity extends Activity {
 				imgLoader.DisplayImage(image_url, loader, imgPhoto);
 
 			} else {
-
+				Toast.makeText(getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 
 		}
@@ -452,12 +450,9 @@ public class ProfileActivity extends Activity {
 					.getDescripcion()));
 			props.add(new BasicNameValuePair("idUser", Utils.idUser));
 
-			JSONObject json = jParser.makeHttpRequest(url_updateProfile,
-					"POST", props);
-			Log.w("Esto me devulve en camara: ", json.toString());
-
 			try {
-				System.out.println(json.getInt(TAG_SUCCESS));
+				JSONObject json = jParser.makeHttpRequest(url_updateProfile,
+						"POST", props);
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 
@@ -466,7 +461,7 @@ public class ProfileActivity extends Activity {
 					return false;
 				}
 
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -481,7 +476,8 @@ public class ProfileActivity extends Activity {
 				Toast.makeText(getApplicationContext(), "Perfil actualizado!",
 						Toast.LENGTH_SHORT).show();
 			} else {
-
+				Toast.makeText(getApplicationContext(),
+						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 
 		}

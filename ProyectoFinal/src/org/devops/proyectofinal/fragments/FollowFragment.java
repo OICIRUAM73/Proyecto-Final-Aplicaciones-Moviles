@@ -84,8 +84,9 @@ public class FollowFragment extends ListFragment {
 								jsonPost.getString("nombre") + " "
 										+ jsonPost.getString("apellido"),
 								"descripcion usuario",
-								jsonPost.getString("nickname"),
-								jsonPost.getString("idUser"));
+										jsonPost.getString("nickname"),
+								jsonPost.getString("idUser"),
+                                jsonPost.getString("location"));
 						usuarios.add(usuario);
 					}
 					return true;
@@ -103,13 +104,14 @@ public class FollowFragment extends ListFragment {
 			mLoadToFollowTask = null;
 
 			if (success) {
-				lista = new ListaFollow(getActivity(), usuarios);
+				lista = new ListaFollow(getActivity(), usuarios, getActivity());
 				setListAdapter(lista);
 			} else {
 				Toast.makeText(getActivity().getApplicationContext(),
 						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
 			}
 		}
+
 		@Override
 		protected void onCancelled() {
 			mLoadToFollowTask = null;

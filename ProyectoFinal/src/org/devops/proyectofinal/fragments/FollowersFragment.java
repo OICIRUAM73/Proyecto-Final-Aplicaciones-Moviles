@@ -76,7 +76,8 @@ public class FollowersFragment extends ListFragment {
 										+ jsonPost.getString("apellido"),
 								"descripcion usuario", "("
 										+ jsonPost.getString("nickname") + ")",
-								jsonPost.getString("idUser"));
+								jsonPost.getString("idUser"),
+								jsonPost.getString("location"));
 						usuarios.add(usuario);
 					}
 					return true;
@@ -95,7 +96,8 @@ public class FollowersFragment extends ListFragment {
 			mLoadFollowersTask = null;
 
 			if (success) {
-				lista = new ListaFollowers(getActivity(), usuarios);
+				lista = new ListaFollowers(getActivity(), usuarios,
+						getActivity());
 				setListAdapter(lista);
 			} else {
 				Toast.makeText(getActivity().getApplicationContext(),

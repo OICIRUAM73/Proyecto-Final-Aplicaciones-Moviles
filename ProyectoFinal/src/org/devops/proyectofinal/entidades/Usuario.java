@@ -5,13 +5,16 @@ public class Usuario {
 	private String info;
 	private String nickName;
 	private String idUser;
- 
-	public Usuario(String nombre, String info, String followers,String idUser) {
+	private String location;
+
+	public Usuario(String nombre, String info, String followers, String idUser,
+			String location) {
 		super();
 		this.nombre = nombre;
 		this.info = info;
 		this.nickName = followers;
 		this.idUser = idUser;
+		this.location = location;
 	}
 
 	public String getIdUser() {
@@ -46,4 +49,11 @@ public class Usuario {
 		this.nickName = followers;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
 }

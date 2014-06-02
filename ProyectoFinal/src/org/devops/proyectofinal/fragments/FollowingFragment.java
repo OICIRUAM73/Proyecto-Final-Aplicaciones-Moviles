@@ -82,9 +82,10 @@ public class FollowingFragment extends ListFragment {
 						Usuario usuario = new Usuario(
 								jsonPost.getString("nombre") + " "
 										+ jsonPost.getString("apellido"),
-								"descripcion usuario",
-								jsonPost.getString("nickname"),
-								jsonPost.getString("idUser"));
+								"descripcion usuario", "("
+										+ jsonPost.getString("nickname") + ")",
+								jsonPost.getString("idUser"),
+								jsonPost.getString("location"));
 						usuarios.add(usuario);
 					}
 					return true;
@@ -103,10 +104,12 @@ public class FollowingFragment extends ListFragment {
 			mLoadFollowingTask = null;
 
 			if (success) {
-				lista = new ListaFollowing(getActivity(), usuarios);
+				lista = new ListaFollowing(getActivity(), usuarios,
+						getActivity());
 				setListAdapter(lista);
 			} else {
-				lista = new ListaFollowing(getActivity(), usuarios);
+				lista = new ListaFollowing(getActivity(), usuarios,
+						getActivity());
 				setListAdapter(lista);
 			}
 		}
