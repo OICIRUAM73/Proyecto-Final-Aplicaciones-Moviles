@@ -30,7 +30,7 @@
             android:label="@string/title_activity_registrar" >
         </activity>
         <activity
-            android:name="org.devops.proyectofinal.Camara"
+            android:name="org.devops.proyectofinal.ProfileActivity"
             android:label="@string/title_camara" >
         </activity>
         <activity

@@ -183,7 +183,7 @@ public class FollowFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mLoadToFollowTask = null;
+			mFollowTask = null;
 
 			if (success) {
 				attemptLoadToFollow();
@@ -196,7 +196,7 @@ public class FollowFragment extends ListFragment {
 
 		@Override
 		protected void onCancelled() {
-			mLoadToFollowTask = null;
+			mFollowTask = null;
 		}
 	}
 }

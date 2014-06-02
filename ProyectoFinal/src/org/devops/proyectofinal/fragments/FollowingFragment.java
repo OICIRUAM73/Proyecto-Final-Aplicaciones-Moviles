@@ -20,7 +20,6 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +31,8 @@ public class FollowingFragment extends ListFragment {
 
 	Vector<Usuario> usuarios;
 
-	private LoadPostsTask mLoadToFollowTask = null;
-	private LoadFollowingTask mFollowingTask = null;
+	private LoadFollowingTask mLoadFollowingTask = null;
+	private LoadStopFollowTask mStopFollowTask = null;
 	private String idUsuarioPasar = "";
 
 	private JsonParser jParser = new JsonParser();
@@ -47,7 +46,7 @@ public class FollowingFragment extends ListFragment {
 			Bundle savedInstanceState) {
 
 		usuarios = new Vector<Usuario>();
-		attemptLoadToFollow();
+		attemptLoadFollowing();
 
 		View rootView = inflater.inflate(R.layout.fragment_follow, container,
 				false);
@@ -55,15 +54,15 @@ public class FollowingFragment extends ListFragment {
 		return rootView;
 	}
 
-	public void attemptLoadToFollow() {
-		if (mLoadToFollowTask != null) {
+	public void attemptLoadFollowing() {
+		if (mLoadFollowingTask != null) {
 			return;
 		}
-		mLoadToFollowTask = new LoadPostsTask();
-		mLoadToFollowTask.execute((Void) null);
+		mLoadFollowingTask = new LoadFollowingTask();
+		mLoadFollowingTask.execute((Void) null);
 	}
 
-	public class LoadPostsTask extends AsyncTask<Void, Void, Boolean> {
+	public class LoadFollowingTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
@@ -71,12 +70,12 @@ public class FollowingFragment extends ListFragment {
 
 			JSONObject json = jParser.makeHttpRequest(url_load_follow, "POST",
 					props);
-			Log.w("Response follow: ", json.toString());
 
 			try {
 				int success = json.getInt(TAG_SUCCESS);
+				usuarios.removeAllElements();
+
 				if (success == 1) {
-					usuarios.removeAllElements();
 					JSONArray JsonPosts = json.getJSONArray("usersFollowing");
 					for (int i = 0; i < JsonPosts.length(); i++) {
 						JSONObject jsonPost = JsonPosts.getJSONObject(i);
@@ -88,11 +87,8 @@ public class FollowingFragment extends ListFragment {
 								jsonPost.getString("idUser"));
 						usuarios.add(usuario);
 					}
-					System.out.println("USUARIOS: \n" + usuarios.toString());
 					return true;
 				} else {
-					Log.w("Ingreso", "se produjo un error");
-					Log.w("Ingreso", Integer.toString(success));
 					return false;
 				}
 			} catch (JSONException e) {
@@ -104,20 +100,20 @@ public class FollowingFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mLoadToFollowTask = null;
+			mLoadFollowingTask = null;
 
 			if (success) {
-				System.out.println("success");
 				lista = new ListaFollowing(getActivity(), usuarios);
 				setListAdapter(lista);
 			} else {
-				System.out.println("incorrect");
+				lista = new ListaFollowing(getActivity(), usuarios);
+				setListAdapter(lista);
 			}
 		}
 
 		@Override
 		protected void onCancelled() {
-			mLoadToFollowTask = null;
+			mLoadFollowingTask = null;
 		}
 	}
 
@@ -136,7 +132,7 @@ public class FollowingFragment extends ListFragment {
 
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-				attemptFollowUser();
+				attemptStopFollowUser();
 			}
 		});
 
@@ -150,15 +146,15 @@ public class FollowingFragment extends ListFragment {
 		builder.show();
 	}
 
-	public void attemptFollowUser() {
-		if (mFollowingTask != null) {
+	public void attemptStopFollowUser() {
+		if (mStopFollowTask != null) {
 			return;
 		}
-		mFollowingTask = new LoadFollowingTask();
-		mFollowingTask.execute((Void) null);
+		mStopFollowTask = new LoadStopFollowTask();
+		mStopFollowTask.execute((Void) null);
 	}
 
-	public class LoadFollowingTask extends AsyncTask<Void, Void, Boolean> {
+	public class LoadStopFollowTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			List<NameValuePair> props = new ArrayList<NameValuePair>();
@@ -185,11 +181,11 @@ public class FollowingFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mLoadToFollowTask = null;
+			mStopFollowTask = null;
 
 			if (success) {
 				System.out.println("success");
-				attemptLoadToFollow();
+				attemptLoadFollowing();
 			} else {
 				Toast.makeText(getActivity().getApplicationContext(),
 						"Ha ocurrido un error!.", Toast.LENGTH_SHORT).show();
@@ -198,7 +194,7 @@ public class FollowingFragment extends ListFragment {
 
 		@Override
 		protected void onCancelled() {
-			mLoadToFollowTask = null;
+			mStopFollowTask = null;
 		}
 	}
 }

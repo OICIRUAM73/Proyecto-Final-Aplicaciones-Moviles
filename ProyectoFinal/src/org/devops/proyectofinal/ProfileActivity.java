@@ -42,7 +42,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Camara extends Activity {
+public class ProfileActivity extends Activity {
 
 	private int SELECT_IMAGE = 237487;
 	private int TAKE_PICTURE = 829038;
@@ -119,7 +119,7 @@ public class Camara extends Activity {
 					imgPhoto.setImageBitmap(bitmap);
 					// imgPhoto.setImageURI(selectedImage);
 
-					dialog = ProgressDialog.show(Camara.this, "",
+					dialog = ProgressDialog.show(ProfileActivity.this, "",
 							"Uploading file...", true);
 					messageText.setText("uploading started.....");
 					new Thread(new Runnable() {
@@ -140,7 +140,7 @@ public class Camara extends Activity {
 					// imgPhoto.setImageURI(selectedImage);
 					imgPhoto.setImageBitmap(bitmap);
 
-					dialog = ProgressDialog.show(Camara.this, "",
+					dialog = ProgressDialog.show(ProfileActivity.this, "",
 							"Uploading file...", true);
 					messageText.setText("uploading started.....");
 					new Thread(new Runnable() {
@@ -298,7 +298,7 @@ public class Camara extends Activity {
 						public void run() {
 							String msg = "File Upload Completed";
 							messageText.setText(msg);
-							Toast.makeText(Camara.this,
+							Toast.makeText(ProfileActivity.this,
 									"File Upload Complete.", Toast.LENGTH_SHORT)
 									.show();
 						}
@@ -319,7 +319,7 @@ public class Camara extends Activity {
 					public void run() {
 						messageText
 								.setText("MalformedURLException Exception : check script url.");
-						Toast.makeText(Camara.this, "MalformedURLException",
+						Toast.makeText(ProfileActivity.this, "MalformedURLException",
 								Toast.LENGTH_SHORT).show();
 					}
 				});
@@ -332,10 +332,7 @@ public class Camara extends Activity {
 
 				runOnUiThread(new Runnable() {
 					public void run() {
-						messageText.setText("Got Exception : see logcat ");
-						Toast.makeText(Camara.this,
-								"Got Exception : see logcat ",
-								Toast.LENGTH_SHORT).show();
+
 					}
 				});
 				Log.e("Upload file to server Exception",
@@ -375,18 +372,31 @@ public class Camara extends Activity {
 
 					JSONArray JsonProfile = json.getJSONArray("userProfile");
 					JSONArray JsonFoto = json.getJSONArray("photo");
-					JSONObject jsonFoto = JsonFoto.getJSONObject(0);
-					for (int i = 0; i < JsonProfile.length(); i++) {
-						JSONObject jsonPost = JsonProfile.getJSONObject(i);
-						profile.setNombre(jsonPost.getString("nombre"));
-						profile.setNickname(jsonPost.getString("nickname"));
-						profile.setEmail(jsonPost.getString("email"));
-						profile.setDescripcion(jsonPost
-								.getString("descripcion"));
-						profile.setPathFoto(jsonFoto.getString("location"));
+					try {
+						JSONObject jsonFoto = JsonFoto.getJSONObject(0);
+						for (int i = 0; i < JsonProfile.length(); i++) {
+							JSONObject jsonPost = JsonProfile.getJSONObject(i);
+							profile.setNombre(jsonPost.getString("nombre"));
+							profile.setNickname(jsonPost.getString("nickname"));
+							profile.setEmail(jsonPost.getString("email"));
+							profile.setDescripcion(jsonPost
+									.getString("descripcion"));
 
+							profile.setPathFoto(jsonFoto.getString("location"));
+
+						}
+					} catch (JSONException e) {
+						for (int i = 0; i < JsonProfile.length(); i++) {
+							JSONObject jsonPost = JsonProfile.getJSONObject(i);
+							profile.setNombre(jsonPost.getString("nombre"));
+							profile.setNickname(jsonPost.getString("nickname"));
+							profile.setEmail(jsonPost.getString("email"));
+							profile.setDescripcion(jsonPost
+									.getString("descripcion"));
+							profile.setPathFoto("photos/unknown.png");
+
+						}
 					}
-
 					return true;
 				} else {
 					return false;

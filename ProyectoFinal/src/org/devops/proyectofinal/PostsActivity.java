@@ -84,7 +84,6 @@ public class PostsActivity extends ListActivity {
 				int success = json.getInt(TAG_SUCCESS);
 				if (success == 1) {
 					JSONArray JsonPosts = json.getJSONArray("posts");
-
 					for (int i = 0; i < JsonPosts.length(); i++) {
 						JSONObject jsonPost = JsonPosts.getJSONObject(i);
 						Post post = new Post(jsonPost.getString("nickname"),
@@ -144,7 +143,7 @@ public class PostsActivity extends ListActivity {
 						Post post = new Post(jsonPost.getString("nickname"),
 								jsonPost.getString("postingTime"),
 								jsonPost.getString("Contenido"),
-                                jsonPost.getString("location"));
+								jsonPost.getString("location"));
 						posts.add(post);
 					}
 					return true;
@@ -163,7 +162,8 @@ public class PostsActivity extends ListActivity {
 			mLoadPostTask = null;
 
 			if (success) {
-				lista = new ListaPost(PostsActivity.this, posts,getApplicationContext());
+				lista = new ListaPost(PostsActivity.this, posts,
+						getApplicationContext());
 				setListAdapter(lista);
 			} else {
 				Toast.makeText(getApplicationContext(),
@@ -306,7 +306,7 @@ public class PostsActivity extends ListActivity {
 	}
 
 	public void lanzarProfile() {
-		Intent i = new Intent(getApplicationContext(), Camara.class);
+		Intent i = new Intent(getApplicationContext(), ProfileActivity.class);
 		startActivity(i);
 	}
 
